@@ -14,7 +14,7 @@ tambien provee de una herramienta que crea una plantilla con las principales acc
 Using npm:
 
 ```bash
-$ npm install 
+$ npm install @benjy2976/pmsg
 ```
 
 
