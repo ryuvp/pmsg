@@ -21,7 +21,12 @@ export default class Model {
       selectable          : false,// Condicional para definir si el objeto es seleccionable
       default             : {},// Valor del objeto por defecto,
       params              : { modeljs: true },// Aquí se configuran parámetros adicionales a enviar en los request excepto DELETE
-      modelGetters        : {}// Aquí se configuran parámetros adicionales a enviar en los request excepto DELETE
+      modelGetters        : {},// Aquí se configuran parámetros adicionales a enviar en los request excepto DELETE
+      paginate            : false,// Condicional para definir si el modelo tiene paginación
+      pagination          : {
+        current_page : 1,
+        per_page     : 10
+      }
     }
     //config.hasKey=config.hasKey!=undefined?config.hasKey:config.key!=undefined
     defaultValues = Object.assign(defaultValues, config)
@@ -44,6 +49,8 @@ export default class Model {
     this.default = defaultValues.default
     this.params = defaultValues.params
     this.modelGetters = defaultValues.modelGetters
+    this.paginate = defaultValues.paginate
+    this.pagination = {...defaultValues.pagination}
     this.state = {}
     this.getters = {}
     this.actions = {}
@@ -52,9 +59,7 @@ export default class Model {
   get(url = '', params = {}) {
     params = Object.assign(params, this.params)
     url = this.route + '/' + url
-    return this.instance.get(url, {
-      params : params,
-    })
+    return this.instance.get(url, params)
   }
 
   post(url = '', params = {}) {
@@ -66,9 +71,7 @@ export default class Model {
   // Función para obtener el listado de Objetos de la base de datos
   getAll(params = {}) {
     params = Object.assign(params, this.params)
-    return this.instance.get(this.route, {
-      params : params,
-    })
+    return this.instance.get(this.route, params)
   }
 
   // Función para crear un objeto en la base de datos
@@ -215,3 +218,4 @@ export default class Model {
     return this.name
   }
 }
+

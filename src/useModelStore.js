@@ -34,6 +34,7 @@ export default function createModelStore (model, state = {}, getters = {}, actio
       maxRelationsResolve : config.maxRelationsResolve,
       relations           : config.relations,
       syncStatus          : config.sync,
+      pagination          : {...config.paginate, last_page: 1, total: 0},
       selectedStatus      : false,
       timeOutAsinc        : null,
       check               : check,
@@ -128,16 +129,24 @@ export default function createModelStore (model, state = {}, getters = {}, actio
         })
       },
       // Action para obtener la lista de objetos de el servidor
-      async get (params = {}) {
+      async get (params = {}, pagination={}) {
       //var commit = store.commit
         const action = this.syncStatus ? 'sync' : 'setItems';
 
+        if (model.paginate) {
+          params = {...params, ...Object.assign({
+            page : this.pagination.current_page, per_page : this.pagination.per_page
+          }, pagination) };
+        }
         if (!(await model.saved(params))) {
           return new Promise((resolve, reject) => {
             model.getAll(params).then(response => {
               const data = response.data;
               model.save(data.data);
-              this[action](data.data);
+              this[action](data.data);              
+              const { data: _ , ...pagination } = data;
+              this.pagination = Object.assign(this.pagination, pagination);
+              //console.log('get', this.pagination)
               this.afterGet();
               resolve(response);
             }).catch(reject);
@@ -148,6 +157,18 @@ export default function createModelStore (model, state = {}, getters = {}, actio
         }
       },
 
+      async getPage (params = {}, pagination={}) {
+        //var commit = store.commit
+        if (model.paginate) {
+          params = {...params, ...Object.assign({
+            page : this.pagination.current_page, per_page : this.pagination.per_page
+          }, pagination) };
+        }
+        //console.log('getPage paginatios', this.pagination)
+        //console.log('getPage', params)
+        return this.get(params)
+
+      },
       // Action para obtener la lista de algunos objetos de el servidor sin consultar ni almacenar en el localstorage
       getSome( params = {}){
         //var commit = store.commit
@@ -296,6 +317,9 @@ export default function createModelStore (model, state = {}, getters = {}, actio
           //CREATE
           this.items.push(item)
         }
+      },
+      setPageSize(pageSize){
+        this.pagination.per_page = pageSize
       },
       
       /********* MUTACIONES COMO ACTIONS */

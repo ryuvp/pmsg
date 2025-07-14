@@ -1,6 +1,6 @@
 {
   "name": "@benjy2976/pmsg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "generator of models and store default for pinia",
   "main": "src/Model.js",
   "scripts": {
