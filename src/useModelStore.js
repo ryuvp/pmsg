@@ -34,7 +34,8 @@ export default function createModelStore (model, state = {}, getters = {}, actio
       maxRelationsResolve : config.maxRelationsResolve,
       relations           : config.relations,
       syncStatus          : config.sync,
-      pagination          : {...config.paginate, last_page: 1, total: 0},
+      paginate            : config.paginate,  
+      pagination          : config.pagination,
       selectedStatus      : false,
       timeOutAsinc        : null,
       check               : check,
@@ -132,7 +133,7 @@ export default function createModelStore (model, state = {}, getters = {}, actio
       async get (params = {}, pagination={}) {
       //var commit = store.commit
         const action = this.syncStatus ? 'sync' : 'setItems';
-
+        
         if (model.paginate) {
           params = {...params, ...Object.assign({
             page : this.pagination.current_page, per_page : this.pagination.per_page
@@ -143,11 +144,12 @@ export default function createModelStore (model, state = {}, getters = {}, actio
             model.getAll(params).then(response => {
               const data = response.data;
               model.save(data.data);
-              this[action](data.data);              
-              const { data: _ , ...pagination } = data;
+              this[action](data.data);
+              // eslint-disable-next-line no-unused-vars
+              const { data: _, ...pagination } = data;
               this.pagination = Object.assign(this.pagination, pagination);
-              //console.log('get', this.pagination)
               this.afterGet();
+              console.log('get', this)
               resolve(response);
             }).catch(reject);
           })
