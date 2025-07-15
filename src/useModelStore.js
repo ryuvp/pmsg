@@ -146,7 +146,7 @@ export default function createModelStore (model, state = {}, getters = {}, actio
               model.save(data.data);
               this[action](data.data);
               // eslint-disable-next-line no-unused-vars
-              const { data: _, ...pagination } = data;
+              const { data: _, ...pagination } = data.meta;
               this.pagination = Object.assign(this.pagination, pagination);
               this.afterGet();
               console.log('get', this)
