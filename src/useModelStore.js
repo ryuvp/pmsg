@@ -143,8 +143,9 @@ export default function createModelStore (model, state = {}, getters = {}, actio
             model.getAll(params).then(response => {
               const data = response.data;
               model.save(data.data);
-              this[action](data.data);              
-              const { data: _ , ...pagination } = data;
+              this[action](data.data);
+              // eslint-disable-next-line no-unused-vars
+              const { data: _ , ...pagination } = data.meta;
               this.pagination = Object.assign(this.pagination, pagination);
               //console.log('get', this.pagination)
               this.afterGet();
